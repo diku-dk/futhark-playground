@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>play-futhark</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index/index.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+</head>
+
+<body>
+    <div id="interface">
+        <div id="options">
+            <button type="button" class="btn btn-success" onclick="execute_code()">Compile & Run ➤</button>
+            <button type="button" class="btn btn-info" onclick="share_code()">Share</button>
+        </div>
+        <div id="editor">
+            <div id="code">{{ snippet }}</div>
+            <div id="output">
+                <div id="run_time"><p> # Program output will be displayed here ...</p></div>
+                <div id="compile_time"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='ace-builds-1.5.0/src-noconflict/ace.js') }}" type="text/javascript"
+        charset="utf-8"></script>
+    <script src="{{ url_for('static', filename='index/index.js') }}"></script>
+
+</body>
+
+</html>

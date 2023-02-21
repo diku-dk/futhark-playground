@@ -1,0 +1,68 @@
+body {
+    background-color: #fff9e5 !important;
+}
+
+#interface {
+    width: 95vw;
+    height: 95vh;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+}
+
+#options {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    flex-grow: 1;
+}
+
+#options button {
+    width: 180px;
+}
+
+@media only screen and (max-width: 768px) {
+    #editor { 
+        flex-direction: column;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    #editor { 
+        flex-direction: row;
+    }
+}
+
+#editor { 
+    flex-grow: 30;
+    display: flex;
+    gap: 5px;
+}
+
+#code {
+    flex: 2;
+}
+
+#output {
+    flex: 1;
+    color: white;
+    font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#run_time {
+    background-color: rgb(29, 29, 29);
+    flex: 4;
+    padding: 5px 5px 5px 5px;
+}
+
+#compile_time {
+    background-color: rgb(29, 29, 29);
+    flex: 1;
+    padding: 5px 5px 5px 5px;
+}
