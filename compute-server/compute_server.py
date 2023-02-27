@@ -52,9 +52,7 @@ def compile_and_run_code(json):
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.connect(("127.0.0.1",SOCKET_PORT))
-
+send_body(s, {"supported_backends": SERVER_SUPPORTED_BACKENDS})
 while True:
-    send_body(s, {"supported_backends": SERVER_SUPPORTED_BACKENDS})
-
     # Parse incoming code requests, compile and execute the code, then return the result.
     send_body(s, parse_incoming(s))

@@ -1,9 +1,10 @@
 import socket
 import threading
-from queue import Queue
+import queue
 import json
 import random
 import logging
+import time
 
 
 SOCKET_PORT = 44372
@@ -28,11 +29,10 @@ def parse_incoming(socket: socket.socket):
 def send_body(socket: socket.socket, body: dict, error=""):
     socket.send((json.dumps({"body": body, "error": error}) + "\r\n").encode("utf-8"))
 
-
 class JobQueue():
     def __init__(self):
-        self.request_queue = Queue()
-        self.response_queue = Queue()
+        self.request_queue = queue.Queue()
+        self.response_queue = queue.Queue()
         self.lock = threading.Lock()
 
 
@@ -48,19 +48,23 @@ class SocketClientConnection(threading.Thread):
         self.address = address
         self.job_queue = JobQueue()
         self.alive = True
+        self.supported_backends = []
 
     def run(self):
         self.clientsocket.settimeout(30)
-        while True:
-            if self.job_queue.request_queue.empty():
-                continue
+        while self.alive:
             try:
+                request = self.job_queue.request_queue.get()
                 LOGGER.debug("Socket client connection trying to execute request")
-                send_body(self.clientsocket, self.job_queue.request_queue.get())
+                send_body(self.clientsocket, request)
                 self.job_queue.response_queue.put(parse_incoming(self.clientsocket))
-            except socket.error:
+            except socket.error as e:
                 break
+        self.disconnect()
+    
+    def disconnect(self):
         self.alive = False
+        self.clientsocket.close()
 
 
 class SocketServer(threading.Thread):
@@ -74,6 +78,7 @@ class SocketServer(threading.Thread):
 
     def add_client(self, client_connection: SocketClientConnection):
         supported_backends = self.receive_supported_backends(client_connection.clientsocket)
+        client_connection.supported_backends = supported_backends
         LOGGER.debug("Socket server received supported backends from client: %s", supported_backends)
         if type(supported_backends) is not list or not supported_backends:
             return
@@ -88,6 +93,14 @@ class SocketServer(threading.Thread):
             backend_to_clients.append(client_connection)
 
             self.backend_to_clients_dict[supported_backend] = backend_to_clients
+    
+    def remove_client(self, client_connection: SocketClientConnection):
+        for supported_backend in client_connection.supported_backends:
+            if supported_backend not in self.backend_to_clients_dict:
+                continue
+            if client_connection not in self.backend_to_clients_dict[supported_backend]:
+                continue
+            self.backend_to_clients_dict[supported_backend].remove(client_connection)
 
     def run(self):
         serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -112,19 +125,22 @@ class SocketServer(threading.Thread):
         LOGGER.debug("Socket server sending request (%s) to a backend that supports %s", request, backend)
         if backend not in self.backend_to_clients_dict:
             return {"body": {}, "error": "Could not find any clients for the chosen backend."}
-        clients = self.backend_to_clients_dict[backend]
-        while len(clients) > 0:
-            client = random.choice(clients)
+        while len(self.backend_to_clients_dict[backend]) > 0:
+            client = random.choice(self.backend_to_clients_dict[backend])
             if not client.alive:
-                clients.remove(client)
-                self.backend_to_clients_dict[backend] = clients
+                self.remove_client(client)
                 continue
-
             with client.job_queue.lock:
+                if not client.alive:
+                    self.remove_client(client)
+                    continue
                 client.job_queue.request_queue.put(request)
                 try:
                     return client.job_queue.response_queue.get(block=True, timeout=10)
-                except:
+                # Queue.empty is returned from get if no item was available before timeout
+                except queue.Empty:
+                    client.disconnect()
+                    self.remove_client(client)
                     continue
         
         return {"body": {}, "error": "Could not find any clients for the chosen backend."}
