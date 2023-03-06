@@ -5,29 +5,18 @@ import json
 import random
 import logging
 import time
+import sys
+import socket_util
 
 
 SOCKET_PORT = 44372
 SOCKET_HOST = "127.0.0.1"
-SERVER_SUPPORTED_BACKENDS = ["c", "cuda", "opencl", "python"]
+SERVER_SUPPORTED_BACKENDS = ["c", "literate", "opencl", "cuda", "python"]
 LOGGER = logging.getLogger("playground-futhark.sub")
 
-
-def read_incoming(socket: socket.socket):
-    buffer = b''
-    while not buffer.decode("utf-8").endswith("\r\n"):
-        buffer += socket.recv(1)
-    return buffer
-
-
 def parse_incoming(socket: socket.socket):
-    incoming = read_incoming(socket).decode("utf-8")
-    LOGGER.debug("Incoming: %s", incoming)
+    incoming = socket_util.read_incoming(socket).decode("utf-8")
     return json.loads(incoming)
-
-
-def send_body(socket: socket.socket, body: dict, error=""):
-    socket.send((json.dumps({"body": body, "error": error}) + "\r\n").encode("utf-8"))
 
 class JobQueue():
     def __init__(self):
@@ -56,7 +45,7 @@ class SocketClientConnection(threading.Thread):
             try:
                 request = self.job_queue.request_queue.get()
                 LOGGER.debug("Socket client connection trying to execute request")
-                send_body(self.clientsocket, request)
+                socket_util.send_body(self.clientsocket, request)
                 self.job_queue.response_queue.put(parse_incoming(self.clientsocket))
             except socket.error as e:
                 break
@@ -122,7 +111,7 @@ class SocketServer(threading.Thread):
             LOGGER.info("Socket server started communicating with client with address %s", address)
 
     def execute_compute(self, backend, request):
-        LOGGER.debug("Socket server sending request (%s) to a backend that supports %s", request, backend)
+        LOGGER.debug("Socket server sending request to a backend that supports %s", backend)
         if backend not in self.backend_to_clients_dict:
             return {"body": {}, "error": "Could not find any clients for the chosen backend."}
         while len(self.backend_to_clients_dict[backend]) > 0:

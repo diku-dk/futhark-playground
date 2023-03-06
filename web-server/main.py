@@ -1,19 +1,20 @@
 from flask import Flask, render_template, request, escape, g
 import hashlib
-import uuid
 import json
 import sqlite3
 from socket_server import SocketServer
 import logging
 import sys
+import base64
+import os
 
-app = Flask("playground-futhark")
+app = Flask("playground-futhark", static_url_path='/static')
+
 DATABASE = "db/play-futhark.db"
 DEFAULT_SNIPPET = """def mean [n] (vs: [n]f64) =
     f64.sum vs / f64.i64 n
 
 def main (n: f64): f64 = mean [1.0,2.0,3.0,4.0]"""
-
 
 ### Logging
 handler = logging.StreamHandler(sys.stdout)
@@ -29,21 +30,63 @@ app.logger.setLevel(logging.DEBUG)
 @app.route('/', defaults={'hash': None})
 @app.route('/<hash>')
 def index(hash):
-    snippet = DEFAULT_SNIPPET
+    backend = request.args.get("backend", default="c")
+    version = request.args.get("version", default="latest")
+    snippet = None
 
     if hash:
         snippet = get_snippet(hash)
     
-    return render_template('index/index.html', snippet=escape(snippet))
+    if not snippet:
+        snippet = DEFAULT_SNIPPET
+    
+    return render_template('index/index.html', 
+        snippet=escape(snippet), 
+        backend=escape(backend), 
+        version=escape(version))
 
 @app.route('/run', methods=['POST'])
 def run():
-    return run_on_gpu(request.data.decode('utf-8'))
-    
+    backend = request.args.get("backend", default="c")
+    version = request.args.get("version", default="latest")
+
+    if backend == "literate":
+        return run_literate(request.data, version)
+
+    return run_on_compute_server(request.data.decode('utf-8'), backend, version)
+
 
 @app.route('/share', methods=['POST'])
 def share():
     return insert_snippet(request.data.decode("utf-8"))
+
+def run_literate(data: bytes, version: str):
+    hash = hashlib.sha256(data).hexdigest()
+
+    if not os.path.exists(f"./static/literate-files/{hash}.md"):
+        compute_output = run_on_compute_server(request.data.decode('utf-8'), 'literate', version)
+        save_literate_files(hash, compute_output)
+    
+    return {"body": {"output": {"compile_time": "", "run_time": "", "literate": f"static/literate-files/{hash}.md"}}, "error": ""}
+
+def save_literate_files(hash, compute_server_data:dict):
+    output = compute_server_data["body"]["output"]
+    markdown_file:str = output["markdown"]
+    images_base64 = output["images"]
+    for image in images_base64:
+        path = image[0]
+        file_bytes = base64.b64decode(image[1].encode("ascii"))
+        if not os.path.exists(f"./static/literate-files/{hash}-img"):
+            os.makedirs(f"./static/literate-files/{hash}-img")
+        with open(f"./static/literate-files/{path}", "wb") as file:
+            file.write(file_bytes)
+
+    markdown_file = markdown_file.replace(f"{hash}-img", f"static/literate-files/{hash}-img")
+    with open(f"./static/literate-files/{hash}.md", "w") as file:
+        file.write(markdown_file)
+
+if not os.path.exists(f"./static/literate-files"):
+    os.makedirs(f"./static/literate-files")
 
 #####################################
 ########## DATABASE THINGS ##########
@@ -90,12 +133,12 @@ def insert_snippet(snippet: str):
 socket_server = SocketServer()
 socket_server.start()
 
-def run_on_gpu(code: str) -> str:
+def run_on_compute_server(code: str, backend: str, version: str) -> str:
     request = json.dumps({
-        "uuid": uuid.uuid4().hex, 
-        "timeout": 1, 
-        "compiler-version": "0.23.1", 
-        "code-backend": "c",
+        "uuid": hashlib.sha256(code.encode()).hexdigest(), 
+        "timeout": 5.0, 
+        "compiler-version": version, 
+        "code-backend": backend,
         "executable-options": ["--log", "--debugging"],
         "code": code})
-    return socket_server.execute_compute("c", request)
+    return socket_server.execute_compute(backend, request)

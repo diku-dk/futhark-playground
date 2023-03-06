@@ -6,21 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>play-futhark</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='index/index.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
 </head>
 
 <body>
     <div id="interface">
         <div id="options">
-            <button type="button" class="btn btn-success" onclick="execute_code()">Compile & Run ➤</button>
-            <button type="button" class="btn btn-info" onclick="share_code()">Share</button>
+            <button onclick="execute_code()">Compile & Run ➤</button>
+            <button onclick="share_code()">Share</button>
+            <select onchange="selected_backend()" id="select_backend">
+                <option value="c">C Backend</option>
+                <option value="literate">Run with literate</option>
+                <option value="opencl">OpenCL backend</option>
+                <option value="cuda">CUDA backend</option>
+                <option value="python">Python backend</option>
+            </select>
+            <select onchange="selected_version()" id="select_version">
+                <option value="latest">Latest version</option>
+                <option value="0.23.1">Ver. 0.23.1</option>
+            </select>
         </div>
         <div id="editor">
             <div id="code">{{ snippet }}</div>
             <div id="output">
                 <div id="run_time"><p> # Program output will be displayed here ...</p></div>
                 <div id="compile_time"></div>
+                <md-block style="display: none;" id="literate"></md-block>
             </div>
         </div>
     </div>

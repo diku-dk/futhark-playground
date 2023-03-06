@@ -2,23 +2,15 @@ import socket
 import json
 import subprocess
 import uuid
+import os
+import socket_util
+import base64
 
 SOCKET_PORT = 44372
-SERVER_SUPPORTED_BACKENDS = ["c", "cuda", "python", "random nonsense"]
-
-def read_incoming(socket: socket.socket):
-    buffer = b''
-    while not buffer.decode("utf-8").endswith("\r\n"):
-        buffer += socket.recv(1)
-    return buffer
-    
-
-def send_body(socket: socket.socket, body: dict, error=""):
-    socket.send((json.dumps({"body": body, "error": error}) + "\r\n").encode("utf-8"))
-
+SERVER_SUPPORTED_BACKENDS = ["c", "cuda", "python", "random nonsense", "literate"]
 
 def parse_incoming(socket: socket.socket):
-    message = json.loads(json.loads(read_incoming(s).decode('utf-8'))["body"])
+    message = json.loads(json.loads(socket_util.read_incoming(s).decode('utf-8'))["body"])
     uuid = message["uuid"]
     output = None
     try:
@@ -28,7 +20,6 @@ def parse_incoming(socket: socket.socket):
     
     if output is None:
         output = {"compile_time": "", "run_time": "No output was generated"}
-    
     return {"uuid": uuid, "output": output}
 
 def compile_and_run_code(json):
@@ -38,7 +29,7 @@ def compile_and_run_code(json):
     executable_options = json["executable-options"]
     code = json["code"]
 
-    filename = uuid.uuid4().hex
+    filename = json["uuid"]
     with open(f'/tmp/{filename}.fut', "w") as file:
         file.write(code)
     output = {"compile_time": "", "run_time": ""}
@@ -46,13 +37,39 @@ def compile_and_run_code(json):
     output["compile_time"] = result.stderr
     if result.returncode != 0:
         return output
+    
+    if code_backend == "literate":
+        markdown_file = open(f"/tmp/{filename}.md", "r")
+        output["markdown"] = markdown_file.read()
+        output["images"] = get_literate_files(filename)
+        markdown_file.close()
+        return output
+    
     result = subprocess.run([f'/tmp/{filename}'] + executable_options, capture_output=True, text=True, timeout=timeout, input="0").stdout
     output["run_time"] = result
+    try:
+        os.remove(f'/tmp/{filename}.fut')
+        os.remove(f'/tmp/{filename}')
+    except:
+        pass
     return output
+
+def get_literate_files(filename):
+    image_directory = f"/tmp/{filename}-img"
+    files = []
+    for path in os.listdir(image_directory):
+        file_path = os.path.join(image_directory, path)
+        if not os.path.isfile(file_path):
+            continue
+        file = open(file_path, "rb")
+        files.append([f"{filename}-img/{path}", base64.b64encode(file.read()).decode("ascii")])
+        file.close()
+    return files
+
 
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.connect(("127.0.0.1",SOCKET_PORT))
-send_body(s, {"supported_backends": SERVER_SUPPORTED_BACKENDS})
+socket_util.send_body(s, {"supported_backends": SERVER_SUPPORTED_BACKENDS})
 while True:
     # Parse incoming code requests, compile and execute the code, then return the result.
-    send_body(s, parse_incoming(s))
+    socket_util.send_body(s, parse_incoming(s))
