@@ -109,8 +109,8 @@ select {
 }
 
 #literate {
-    background-color: rgb(29, 29, 29);
-    color: white;
-    padding: 5px 5px 5px 5px;
+    background-color: #0d1117;
+    color: #c9d1d9;
+    padding: 10px 10px 10px 10px;
     border-radius: 4px;
 }

@@ -53,7 +53,9 @@ def run():
     if backend == "literate":
         return run_literate(request.data, version)
 
-    return run_on_compute_server(request.data.decode('utf-8'), backend, version)
+    output = run_on_compute_server(request.data.decode('utf-8'), backend, version)
+    output["body"]["output"]["compile_time"] = output["body"]["output"]["compile_time"].replace(f"/tmp/{output['body']['uuid']}.fut", "program.fut")
+    return output
 
 
 @app.route('/share', methods=['POST'])
