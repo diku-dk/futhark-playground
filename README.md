@@ -4,13 +4,33 @@ A simple playground for running and sharing futhark snippets. The playground con
 
 ## Running the project
 
-### Running the web-server
-To run the project you need to install [Python](https://www.python.org/) and install the dependencies found in requirements.txt (with pip: `pip install -r requirements.txt`). Then you can use `cd web-server && python -m flask --app main.py run` to run the web-frontend of the application, which by default is hosted at 127.0.0.1:5000.
+To run the project you need to install
+[Python](https://www.python.org/) and install the dependencies found
+in requirements.txt (with pip: `pip install -r requirements.txt`).
 
-When running the web-server, you also start a socket server at 127.0.0.1:44372. Clients can connect to this socket server.
+You also need Futhark on the system running the compute server.
 
-### Running the compute-server
-A simply compute server that connects to the socket server hosted at 127.0.0.1:44372, and awaits requests, which contains Futhark code, and some instructions, which it will use to run the code. For this [Futhark](https://futhark.readthedocs.io/en/stable/installation.html) is obviously required. You can start the compute-server by running `cd webserver-server && python compute_server.py`. The compute_server will fail to run if there are no servers running on port 44372.
+### Running the web server
+
+```
+$ cd web-server && python -m flask --app main.py run
+```
+
+Listens to HTTP connections on 127.0.0.1:5000.
+
+When the web-server also starts a socket server at
+127.0.0.1:44372. Compute servers can connect to this port.
+
+### Running the compute server
+
+```
+$ cd web-server && python compute_server.py
+```
+
+Connects to the socket server at 127.0.0.1:44372, and awaits requests,
+which contains Futhark code, and some instructions, which it will use
+to run the code. The compute_server will fail to run if there are no
+servers listening on port 44372.
 
 ## Communication between web-server and compute-server
 The communication between the server and clients is a simple TCP connection. The server can have an unlimited amount of clients connected to it, and it will at random choose which client to send run requests to.
