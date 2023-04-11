@@ -18,6 +18,8 @@ body {
     flex-direction: row;
     gap: 5px;
     flex-grow: 1;
+    max-height: 46px;
+    min-height: 46px;
 }
 
 button {
@@ -28,6 +30,8 @@ button {
     color: white;
     transition-duration: 0.4s;
     font-weight: bold;
+    max-height: 46px;
+    min-height: 46px;
 }
 
 button:hover {
@@ -94,23 +98,22 @@ select {
     gap: 5px;
 }
 
-#run_time {
+#literate {
     background-color: rgb(29, 29, 29);
+    color: white;
     flex: 4;
     padding: 5px 5px 5px 5px;
     border-radius: 4px;
+}
+
+#literate img {
+    display: block;
+    margin: 0 auto;
 }
 
 #compile_time {
     background-color: rgb(29, 29, 29);
     flex: 1;
     padding: 5px 5px 5px 5px;
-    border-radius: 4px;
-}
-
-#literate {
-    background-color: #0d1117;
-    color: #c9d1d9;
-    padding: 10px 10px 10px 10px;
     border-radius: 4px;
 }

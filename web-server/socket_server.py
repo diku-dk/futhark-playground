@@ -4,8 +4,6 @@ import queue
 import json
 import random
 import logging
-import time
-import sys
 import socket_util
 
 

@@ -1,11 +1,13 @@
 # futhark-playground - a web service for interacting with futhark
-A simple playground for running and sharing futhark snippets. The playground consists of a Python flask server, and a Python socket server. The code submitted by users is not run by the flask server, but is instead run by one of the clients connected to the socket server.
+A simple playground for running and sharing futhark snippets. The playground runs [futhark literate](https://futhark-lang.org/examples/literate-basics.html) code and outputs the corresponding markdown and images.
+
+The playground consists of a Python flask server, and a Python socket server. The code submitted by users is not run by the flask server, but is instead run by one of the clients connected to the socket server.
 
 
 ## Running the project
 
 ### Running the web-server
-To run the project you need to install [Python](https://www.python.org/) and install the dependencies found in requirements.txt (with pip: `pip install -r requirements.txt`). Then you can use `cd web-server && python -m flask --app main.py run` to run the web-frontend of the application, which by default is hosted at 127.0.0.1:5000.
+To run the project you need to install [Python](https://www.python.org/) and install the dependencies found in requirements.txt (with pip: `pip install -r requirements.txt`). Then you can use `cd web-server && python -m flask --app flask_server.py run` to run the web-frontend of the application, which by default is hosted at 127.0.0.1:5000.
 
 When running the web-server, you also start a socket server at 127.0.0.1:44372. Clients can connect to this socket server.
 
@@ -52,11 +54,10 @@ The respond from the client should follow the following format:
             "output":
                 {
                     "compile_time": "compile output"
-                    "run_time": "runtime output"    
+                    "markdown": "markdown"
+                    "images:" [] 
                 }
         }
     "error": "any potential errors that has occurred"
 }
 ```
-## Futhark literal support
-something smart

@@ -79,6 +79,7 @@ var supportedModes = {
     FSharp:      ["fsi|fs|ml|mli|fsx|fsscript"],
     FSL:         ["fsl"],
     FTL:         ["ftl"],
+    Futhark:     ["futhark"],
     Gcode:       ["gcode"],
     Gherkin:     ["feature"],
     Gitignore:   ["^.gitignore"],

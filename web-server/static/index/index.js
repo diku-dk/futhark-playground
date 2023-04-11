@@ -1,6 +1,6 @@
 var editor = ace.edit("code");
 editor.setTheme("ace/theme/monokai");
-editor.session.setMode("ace/mode/haskell");
+editor.session.setMode("ace/mode/futhark");
 
 api_host = "http://127.0.0.1:5000";
 
@@ -13,11 +13,6 @@ document.addEventListener("DOMContentLoaded", function(){
         document.getElementById("select_version").value = params.get("version");
     }
 });
-
-function display_element(id, display) {
-    document.getElementById(id).style.display = display ? "block" : "none";
-}
-
 
 async function execute_code() {
     response = await fetch(api_host 
@@ -32,25 +27,11 @@ async function execute_code() {
     error = response_json["error"]
 
     if (error) {
-        document.getElementById("run_time").innerText = "ERROR: " + error;
+        document.getElementById("literate").innerText = "ERROR: " + error;
         return;
     }
 
-    if (!body.hasOwnProperty("literate")) {
-        document.getElementById("run_time").innerText = body["run_time"];
-        document.getElementById("compile_time").innerText = body["compile_time"];
-        document.getElementById("output").style.flex = 1;
-
-        display_element("literate", false)
-        display_element("run_time", true)
-        display_element("compile_time", true)
-        return;
-    }
-
-    display_element("run_time", false)
-    display_element("compile_time", false)
-    document.getElementById("output").style.flex = 2;
-    display_element("literate", true)
+    document.getElementById("compile_time").innerText = body["compile_time"];
     literate_md_url = body["literate"]
     document.getElementById("literate").setAttribute("src", window.location.protocol + "//" + window.location.host + "/" + literate_md_url)
 }

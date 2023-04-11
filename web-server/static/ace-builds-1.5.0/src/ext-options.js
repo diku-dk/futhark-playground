@@ -198,6 +198,7 @@ var supportedModes = {
     Forth:       ["frt|fs|ldr|fth|4th"],
     Fortran:     ["f|f90"],
     FSharp:      ["fsi|fs|ml|mli|fsx|fsscript"],
+    Futhark:     ["futhark"],
     FSL:         ["fsl"],
     FTL:         ["ftl"],
     Gcode:       ["gcode"],
