@@ -14,7 +14,7 @@ You also need Futhark on the system running the compute server.
 ### Running the web server
 
 ```
-$ cd web-server && python -m flask --app main.py run
+$ cd web-server && python flask_server.py
 ```
 
 Listens to HTTP connections on 127.0.0.1:5000.

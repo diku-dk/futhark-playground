@@ -3,14 +3,12 @@ import threading
 import queue
 import json
 import random
-import logging
 import socket_util
-
+from logger import logger as LOGGER
 
 SOCKET_PORT = 44372
 SOCKET_HOST = "127.0.0.1"
 SERVER_SUPPORTED_BACKENDS = ["c", "literate", "opencl", "cuda", "python"]
-LOGGER = logging.getLogger("playground-futhark.sub")
 
 def parse_incoming(socket: socket.socket):
     incoming = socket_util.read_incoming(socket).decode("utf-8")

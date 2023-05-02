@@ -1,25 +1,31 @@
-from flask import Flask, render_template, request, escape, g
+from flask import Flask, render_template, request, escape
+from flask_cors import CORS
 import hashlib
 import json
 from socket_server import SocketServer
-import logging
-import sys
 import base64
 import os
 import re
+from waitress import serve
+import argparse
+from logger import logger as LOGGER
+
+parser = argparse.ArgumentParser(description='Run the futhark playground web server server')
+parser.add_argument('--port', metavar='port', type=int,
+                    help='the port of the web server', default=5050)
+parser.add_argument('--address', metavar='address', type=str,
+                    help='the address of the web server', default='127.0.0.1')
+args = parser.parse_args()
+
+WEBSERVER_PORT = args.port
+WEBSERVER_ADDRESS = args.address
 
 app = Flask("playground-futhark", static_url_path='/static')
+cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 default_snippet_file = open("./static/default-snippets/literate-basics.fut", "r")
 DEFAULT_SNIPPET = default_snippet_file.read()
 default_snippet_file.close()
-
-### Logging
-handler = logging.StreamHandler(sys.stdout)
-handler.setFormatter(logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-app.logger.addHandler(handler)
-app.logger.setLevel(logging.DEBUG)
 
 ##################################
 ########## FLASK THINGS ##########
@@ -172,3 +178,8 @@ def run_on_compute_server(code: str, backend: str, version: str) -> str:
         "executable-options": ["--log", "--debugging"],
         "code": code})
     return socket_server.execute_compute(backend, request)
+
+
+if __name__ == "__main__":
+    LOGGER.info(f"Starting webserver at {WEBSERVER_ADDRESS}:{WEBSERVER_PORT}")
+    serve(app, host=WEBSERVER_ADDRESS, port=WEBSERVER_PORT)
