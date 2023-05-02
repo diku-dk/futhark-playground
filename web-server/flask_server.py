@@ -12,7 +12,7 @@ from logger import logger as LOGGER
 
 parser = argparse.ArgumentParser(description='Run the futhark playground web server server')
 parser.add_argument('--port', metavar='port', type=int,
-                    help='the port of the web server', default=5000)
+                    help='the port of the web server', default=5050)
 parser.add_argument('--address', metavar='address', type=str,
                     help='the address of the web server', default='127.0.0.1')
 args = parser.parse_args()
