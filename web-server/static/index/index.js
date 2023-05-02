@@ -2,7 +2,7 @@ var editor = ace.edit("code");
 editor.setTheme("ace/theme/monokai");
 editor.session.setMode("ace/mode/futhark");
 
-api_host = "http://127.0.0.1:5000";
+api_host = "http://playground.futhark-lang.org";
 
 document.addEventListener("DOMContentLoaded", function(){
     params = new URLSearchParams(window.location.search);
