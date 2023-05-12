@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import socket
 import json
 import subprocess
@@ -5,9 +7,6 @@ import os
 import sys
 import base64
 import argparse
-
-# XXX: somewhat hacky.
-sys.path.insert(0, "../web-server")
 import socket_util
 
 parser = argparse.ArgumentParser(description='Run the futhark playground compute client')

@@ -33,6 +33,10 @@ which contains Futhark code, and some instructions, which it will use
 to run the code. The compute_server will fail to run if there are no
 servers listening on port 44372.
 
+There is also a Dockerfile in `compute-client` as well as a script
+`run-compute-client.sh` in the root of the repository that builds a
+Docker image and runs the client.
+
 ## Communication between web-server and compute-server
 The communication between the server and clients is a simple TCP connection. The server can have an unlimited amount of clients connected to it, and it will at random choose which client to send run requests to.
 
