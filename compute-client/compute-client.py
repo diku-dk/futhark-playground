@@ -2,12 +2,15 @@ import socket
 import json
 import subprocess
 import os
-import socket_util
+import sys
 import base64
 import argparse
 
+# XXX: somewhat hacky.
+sys.path.insert(0, "../web-server")
+import socket_util
 
-parser = argparse.ArgumentParser(description='Run the futhark playground compute server')
+parser = argparse.ArgumentParser(description='Run the futhark playground compute client')
 parser.add_argument('--port', metavar='port', type=int,
                     help='the port of the target web server', default=44372)
 parser.add_argument('--address', metavar='address', type=str,
@@ -27,7 +30,7 @@ def parse_incoming(socket: socket.socket):
         output = compile_and_run_code(message)
     except subprocess.TimeoutExpired:
         output = {"compile_time": "Timeout"}
-    
+
     if output is None:
         output = {"compile_time": ""}
     return {"uuid": uuid, "output": output}
@@ -47,7 +50,7 @@ def compile_and_run_code(json):
     output["compile_time"] = result.stderr
     if result.returncode != 0:
         return output
-    
+
     markdown_file = open(f"/tmp/{filename}.md", "r")
     output["markdown"] = markdown_file.read()
     output["images"] = get_literate_files(filename)

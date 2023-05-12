@@ -22,10 +22,10 @@ Listens to HTTP connections on 127.0.0.1:5000.
 When the web-server also starts a socket server at
 127.0.0.1:44372. Compute servers can connect to this port.
 
-### Running the compute server
+### Running a compute client
 
 ```
-$ cd web-server && python compute_server.py
+$ cd compute-client && python compute-client.py
 ```
 
 Connects to the socket server at 127.0.0.1:44372, and awaits requests,
