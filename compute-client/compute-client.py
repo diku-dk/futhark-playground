@@ -21,6 +21,8 @@ TARGET_SOCKET_ADDRESS = args.address
 
 SERVER_SUPPORTED_BACKENDS = ["c", "cuda", "python", "random nonsense", "literate"]
 
+print(f'Connecting to {TARGET_SOCKET_ADDRESS}:{TARGET_SOCKET_PORT}')
+
 def parse_incoming(socket: socket.socket):
     message = json.loads(json.loads(socket_util.read_incoming(s).decode('utf-8'))["body"])
     uuid = message["uuid"]

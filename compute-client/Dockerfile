@@ -4,7 +4,7 @@ WORKDIR /
 
 ENV PORT=44372
 ENV SERVER=localhost
-RUN apt update && apt install -y libtinfo-dev libgmp-dev zlib1g-dev python pip wget
+RUN apt update && apt install -y libtinfo-dev libgmp-dev zlib1g-dev python pip wget gnuplot ffmpeg imagemagick
 RUN python3 -m pip install --upgrade pip
 RUN wget https://futhark-lang.org/releases/futhark-nightly-linux-x86_64.tar.xz
 RUN tar xvf futhark-nightly-linux-x86_64.tar.xz
