@@ -43,7 +43,9 @@ class SocketClientConnection(threading.Thread):
                 LOGGER.debug("Socket client connection trying to execute request")
                 socket_util.send_body(self.clientsocket, request)
                 self.job_queue.response_queue.put(parse_incoming(self.clientsocket))
-            except socket.error as e:
+            except Exception as error:
+                LOGGER.debug("An error occurred with a client from address %s", self.address)
+                LOGGER.debug(error)
                 break
         self.disconnect()
     
@@ -101,9 +103,9 @@ class SocketServer(threading.Thread):
             client_connection = SocketClientConnection(clientsocket, address)
             try:
                 self.add_client(client_connection)
+                client_connection.run()
             except:
                 continue
-            client_connection.run()
             LOGGER.info("Socket server started communicating with client with address %s", address)
 
     def execute_compute(self, backend, request):
