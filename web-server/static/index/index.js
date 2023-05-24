@@ -1,4 +1,5 @@
 var editor = ace.edit("code");
+editor.setShowPrintMargin(false);
 editor.setTheme("ace/theme/monokai");
 editor.session.setMode("ace/mode/futhark");
 
@@ -13,6 +14,10 @@ document.addEventListener("DOMContentLoaded", function(){
         document.getElementById("select_version").value = params.get("version");
     }
 });
+
+function update_view_link(hash) {
+    document.getElementById("expand_button").setAttribute("href", "./view/"+hash);
+}
 
 async function execute_code() {
     response = await fetch(api_host 
@@ -32,8 +37,9 @@ async function execute_code() {
     }
 
     document.getElementById("compile_time").innerText = body["compile_time"];
-    literate_md_url = body["literate"]
-    document.getElementById("literate").setAttribute("src", window.location.protocol + "//" + window.location.host + "/" + literate_md_url)
+    literate_md_url = body["literate"];
+    document.getElementById("literate").setAttribute("src", window.location.protocol + "//" + window.location.host + "/" + literate_md_url);
+    update_view_link(response_json["body"]["uuid"]);
 }
 
 async function share_code() {
@@ -44,6 +50,7 @@ async function share_code() {
 
     response_text = await response.text();
     new_url = window.location.protocol + "//" + window.location.host + "/" + response_text + window.location.search;
+    update_view_link(response_text);
     window.history.pushState({path: new_url}, '', new_url);
     navigator.clipboard.writeText(window.location.toString());
     alert("Copied shareable URL to clipboard")

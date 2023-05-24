@@ -33,6 +33,7 @@ default_snippet_file.close()
 
 @app.route('/', defaults={'hash': None})
 @app.route('/<hash>')
+@app.route('/<hash>/')
 def index(hash):
     backend = request.args.get("backend", default="c")
     version = request.args.get("version", default="latest")
@@ -44,6 +45,9 @@ def index(hash):
         snippet = get_snippet(hash)
         snippet_output = get_snippet_output(hash)
         compile_time_output = get_compile_time_output(hash)
+    
+    if not hash:
+        hash = ""
     
     if not snippet_output:
         snippet_output = ""
@@ -59,9 +63,11 @@ def index(hash):
         backend=escape(backend), 
         version=escape(version),
         literate_content=snippet_output,
-        compile_time_output=compile_time_output)
+        compile_time_output=compile_time_output,
+        hash=hash)
 
 @app.route('/run', methods=['POST'])
+@app.route('/run/', methods=['POST'])
 def run():
     backend = request.args.get("backend", default="c")
     version = request.args.get("version", default="latest")
@@ -72,6 +78,19 @@ def run():
 @app.route('/share', methods=['POST'])
 def share():
     return insert_snippet(request.data.decode("utf-8"))
+
+@app.route('/view', defaults={'hash': None})
+@app.route('/view/', defaults={'hash': None})
+@app.route('/view/<hash>')
+def view(hash):
+    snippet_output = None
+    if hash is not None:
+        snippet_output = get_snippet_output(hash)
+    if snippet_output is None:
+        snippet_output = ""
+    return render_template('view/view.html', 
+        literate_content=snippet_output)
+
 
 #####################################
 ########## FILE MANAGEMENT ##########
@@ -155,7 +174,7 @@ def save_literate_files(hash, compute_server_data:dict):
 
     markdown_file:str = output["markdown"]
     if markdown_file:
-        markdown_file = markdown_file.replace(f"{hash}-img", f"static/literate-files/{hash}")
+        markdown_file = markdown_file.replace(f"{hash}-img", f"/static/literate-files/{hash}")
         with open(f"./static/literate-files/{hash}/{hash}.md", "w") as file:
             file.write(markdown_file)
 

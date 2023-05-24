@@ -1,0 +1,13 @@
+body {
+    background-color: rgb(29, 29, 29);
+}
+
+#literate {
+    color: white;
+    margin: 2vh 5vw 2vh 5vw;
+}
+
+#literate img {
+    display: block;
+    margin: 0 auto;
+}

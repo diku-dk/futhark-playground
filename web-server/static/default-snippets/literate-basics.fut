@@ -18,7 +18,7 @@ def linspace (n: i64) (start: f64) (end: f64) : [n]f64 =
 
 -- > linspace 10i64 5f64 10f64
 
--- If you look at the [source file](literate-basics.fut), you'll see
+-- If you look at the [source file](https://futhark-lang.org/examples/literate-basics.fut), you'll see
 -- that that the results are not part of what I wrote.  Those are
 -- automatically inserted by ``futhark literate``.
 --
