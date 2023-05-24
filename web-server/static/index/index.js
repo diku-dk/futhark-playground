@@ -33,6 +33,7 @@ function update_view_link(hash) {
 }
 
 async function execute_code() {
+    document.getElementById("literate").innerText = "Loading...";
     response = await fetch(api_host 
         + "/run?backend="+document.getElementById("select_backend").value
         +"&version="+document.getElementById("select_version").value, {
