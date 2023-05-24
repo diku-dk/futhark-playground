@@ -32,6 +32,12 @@ function update_view_link(hash) {
     document.getElementById("expand_button").setAttribute("href", "./view/"+hash);
 }
 
+function update_url_uuid(uuid) {
+    new_url = window.location.protocol + "//" + window.location.host + "/" + uuid + window.location.search;
+    update_view_link(uuid);
+    window.history.pushState({path: new_url}, '', new_url);
+}
+
 async function execute_code() {
     document.getElementById("literate").innerText = "Loading...";
     response = await fetch(api_host 
@@ -53,7 +59,9 @@ async function execute_code() {
     document.getElementById("compile_time").innerText = body["compile_time"];
     literate_md_url = body["literate"];
     document.getElementById("literate").setAttribute("src", window.location.protocol + "//" + window.location.host + "/" + literate_md_url);
-    update_view_link(response_json["body"]["uuid"]);
+    uuid = response_json["body"]["uuid"];
+    update_url_uuid(uuid);
+    document.getElementById("reset_button").disabled = true;
 }
 
 async function share_code() {
@@ -63,9 +71,8 @@ async function share_code() {
     });
 
     response_text = await response.text();
-    new_url = window.location.protocol + "//" + window.location.host + "/" + response_text + window.location.search;
-    update_view_link(response_text);
-    window.history.pushState({path: new_url}, '', new_url);
+    
+    update_url_uuid(response_text);
     navigator.clipboard.writeText(window.location.toString());
     alert("Copied shareable URL to clipboard")
 }
