@@ -20,12 +20,6 @@ class JobQueue():
         self.response_queue = queue.Queue()
         self.lock = threading.Lock()
 
-
-class SocketClientHandshake():
-    def __init__(self, supported_backends: list[str]):
-        self.supported_backends = supported_backends
-
-
 class SocketClientConnection(threading.Thread):
     def __init__(self, clientsocket: socket.socket, address):
         super(SocketClientConnection, self).__init__()

@@ -73,12 +73,6 @@ select {
     transition-duration: 0.4s;
 }
 
-@media only screen and (max-width: 768px) {
-    #editor { 
-        flex-direction: column;
-    }
-}
-
 @media only screen and (min-width: 768px) {
     #editor { 
         flex-direction: row;
@@ -86,25 +80,40 @@ select {
 }
 
 #editor { 
-    flex-grow: 30;
     display: flex;
     gap: 5px;
     margin-bottom: 10px;
 }
 
 #code {
-    flex: 2;
+    width: 66%;
+    height: 90vh;
     border-radius: 4px;
+    resize: horizontal;
+    overflow-y: scroll;
 }
 
 #output {
     position: relative;
     flex: 1;
+    height: 90vh;
     color: white;
     font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     display: flex;
     flex-direction: column;
     gap: 5px;
+    overflow-y: scroll;
+}
+
+@media only screen and (max-width: 768px) {
+    #editor { 
+        flex-direction: column;
+    }
+
+    #code {
+        width: 100%;
+        resize: none;
+    }
 }
 
 #literate {
