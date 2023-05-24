@@ -13,6 +13,19 @@ document.addEventListener("DOMContentLoaded", function(){
     if (params.has('version')) {
         document.getElementById("select_version").value = params.get("version");
     }
+
+    currentCache = localStorage.getItem(window.location.pathname);
+    if (currentCache == null) {
+        document.getElementById("reset_button").disabled = true;
+        return;
+    }
+    editor.setValue(currentCache);
+    document.getElementById("reset_button").disabled = false;
+});
+
+editor.session.on('change', function(delta) {
+    localStorage.setItem(window.location.pathname, editor.getValue());
+    document.getElementById("reset_button").disabled = false;
 });
 
 function update_view_link(hash) {
@@ -74,4 +87,10 @@ function selected_backend() {
 function selected_version() {
     version = document.getElementById("select_version").value;
     addUrlParam("version", version);
+}
+
+function reset_code() {
+    localStorage.removeItem(window.location.pathname);
+    document.getElementById("reset_button").disabled = true;
+    location.reload();
 }

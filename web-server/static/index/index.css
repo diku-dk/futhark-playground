@@ -48,6 +48,14 @@ button:hover {
     width: 180px;
 }
 
+button:disabled {
+    background-color: #5f021fad;
+}
+button:hover:disabled {
+    cursor: default;
+    color: white;
+}
+
 #options select:hover {
     background-color: white;
     color: #5f021f;
