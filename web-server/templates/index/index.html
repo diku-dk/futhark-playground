@@ -13,8 +13,12 @@
 <body>
     <div id="interface">
         <div id="options">
-            <button onclick="execute_code()">Compile & Run ➤</button>
-            <button onclick="share_code()">Share</button>
+            <button onclick="execute_code()" class="tooltip">Compile & Run ➤
+                <span class="tooltiptext">Run the code</span>
+            </button>
+            <button onclick="share_code()" class="tooltip">Share
+                <span class="tooltiptext">Get a sharable url</span>
+            </button>
             <select onchange="selected_backend()" id="select_backend">
                 <option value="c">C Backend</option>
                 <option value="opencl">OpenCL backend</option>
@@ -25,17 +29,25 @@
                 <option value="latest">Latest version</option>
                 <option value="0.23.1">Ver. 0.23.1</option>
             </select>
-            <button onclick="reset_code()" id="reset_button" disabled>Reset Code</button>
+            <button onclick="reset_code()" id="reset_button" class="tooltip" disabled>Reset Code
+                <span class="tooltiptext lefttooltip">Undo all your changes</span>
+            </button>
         </div>
         <div id="editor">
             <div id="code">{{ snippet }}</div>
             <div id="output">
-                <a id="expand_button" href="./view/{{ hash }}" target="_blank">
-                    <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"><rect fill="none" height="24" width="24"/><polygon fill="white" points="21,11 21,3 13,3 16.29,6.29 6.29,16.29 3,13 3,21 11,21 7.71,17.71 17.71,7.71"/></svg>
+                <a id="expand_button" href="./view/{{ hash }}" target="_blank" class="tooltip">
+                    <span class="tooltiptext lefttooltip">View in a new tab</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24"
+                        viewBox="0 0 24 24" width="24">
+                        <rect fill="none" height="24" width="24" />
+                        <polygon fill="white"
+                            points="21,11 21,3 13,3 16.29,6.29 6.29,16.29 3,13 3,21 11,21 7.71,17.71 17.71,7.71" />
+                    </svg>
                 </a>
                 <md-block id="literate"> {{ literate_content }}</md-block>
                 <div id="compile_time"> {{ compile_time }}</div>
-                
+
             </div>
         </div>
     </div>
