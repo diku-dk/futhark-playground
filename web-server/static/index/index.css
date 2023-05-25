@@ -17,7 +17,6 @@ body {
     display: flex;
     flex-direction: row;
     gap: 5px;
-    flex-grow: 1;
     max-height: 46px;
     min-height: 46px;
 }
@@ -41,11 +40,39 @@ button:hover {
   }
 
 #options button {
-    width: 180px;
+    width: 160px;
 }
 
 #options select {
-    width: 180px;
+    width: 160px;
+}
+
+
+@media only screen and (max-width: 768px) {
+    #options button { 
+        flex-grow: 1;
+    }
+    #options select { 
+        flex-grow: 1;
+        width: 80px;
+    }
+}
+
+@media only screen and (max-width: 358px) {
+    #options { 
+        flex-direction: column;
+        margin-bottom: 160px;
+    }
+
+    #options button { 
+        width: auto;
+        height: 46px;
+    }
+    #options select { 
+        width: auto;
+        height: 46px;
+    }
+
 }
 
 button:disabled {
@@ -86,7 +113,7 @@ select {
 }
 
 #code {
-    width: 66%;
+    width: 50%;
     height: 90vh;
     border-radius: 4px;
     resize: horizontal;
