@@ -7,7 +7,7 @@
     <title>Futhark Playground</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='index/index.css') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
-    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
 </head>
 
 <body>
@@ -51,9 +51,13 @@
             </div>
         </div>
     </div>
+    <script src=" https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js "></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
     <script src="{{ url_for('static', filename='ace-builds-1.5.0/src/ace.js') }}" type="text/javascript"
         charset="utf-8"></script>
     <script src="{{ url_for('static', filename='index/index.js') }}"></script>
+    <script src="{{ url_for('static', filename='prism/futhark.js') }}"></script>
 
 </body>
 
