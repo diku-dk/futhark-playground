@@ -1,4 +1,4 @@
-# [futhark-playground.org](http://playground.futhark-lang.org/)- a web service for interacting with futhark literate
+# [futhark-playground.org](https://playground.futhark-lang.org/)- a web service for interacting with futhark literate
 A simple playground for running and sharing futhark snippets. The playground runs [futhark literate](https://futhark-lang.org/examples/literate-basics.html) code and outputs the corresponding markdown and images.
 
 The playground consists of a Python flask server, and a Python socket server. The code submitted by users is not run by the flask server, but is instead run by one of the clients connected to the socket server.
