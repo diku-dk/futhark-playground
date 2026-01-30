@@ -3,7 +3,7 @@ editor.setShowPrintMargin(false);
 editor.setTheme("ace/theme/monokai");
 editor.session.setMode("ace/mode/futhark");
 
-api_host = "http://playground.futhark-lang.org";
+api_host = "https://playground.futhark-lang.org";
 
 document.addEventListener("DOMContentLoaded", function(){
     params = new URLSearchParams(window.location.search);
